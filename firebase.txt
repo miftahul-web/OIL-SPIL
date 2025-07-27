@@ -1,0 +1,30 @@
+@echo off
+echo =======================================
+echo  Firebase Hosting Auto Deploy
+echo =======================================
+
+:: Pastikan Node.js sudah terinstal
+node -v >nul 2>&1
+IF %ERRORLEVEL% NEQ 0 (
+    echo [ERROR] Node.js tidak ditemukan. Install Node.js dulu.
+    pause
+    exit /b
+)
+
+:: Login ke Firebase (jika belum login)
+echo [INFO] Login ke Firebase...
+firebase login
+
+:: Inisialisasi Firebase jika belum pernah
+echo [INFO] Inisialisasi Firebase...
+firebase init hosting
+
+:: Deploy ke Firebase
+echo [INFO] Deploying ke Firebase...
+firebase deploy
+
+echo =======================================
+echo  Deploy Selesai!
+echo  Buka URL di atas untuk melihat website Anda.
+echo =======================================
+pause

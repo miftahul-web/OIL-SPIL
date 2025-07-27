@@ -1,0 +1,63 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Monitoring Warna</title>
+<style>
+  body{background:#0f172a;color:#e2e8f0;font-family:Arial;text-align:center;padding:20px}
+  .colorbox{width:150px;height:150px;margin:20px auto;border-radius:12px;border:2px solid #fff}
+  .btn{padding:10px 16px;border:none;border-radius:8px;margin:4px;cursor:pointer}
+  .row{margin:12px 0}
+  input{padding:8px;border-radius:6px;border:1px solid #334155;background:#1e293b;color:#e2e8f0}
+</style>
+</head>
+<body>
+  <h1>OIL SPILL DETECTION</h1>
+
+  <div id="colorBox" class="colorbox"></div>
+  <p>RGB: <span id="rgbTxt">0,0,0</span></p>
+  <p>Relay: <span id="relayState">OFF</span></p>
+  <p>Mode: <span id="modeState">AUTO</span></p>
+  <p>BLACK_TH: <span id="blackTh">0</span></p>
+
+  <div class="row">
+    <button class="btn" onclick="setMode('auto')">Mode AUTO</button>
+    <button class="btn" onclick="setMode('manual')">Mode MANUAL</button>
+  </div>
+
+  <div class="row">
+    <button class="btn" onclick="relay('on')">Manual ON</button>
+    <button class="btn" onclick="relay('off')">Manual OFF</button>
+  </div>
+
+  <div class="row">
+    <input type="number" id="thInput" placeholder="BLACK_TH baru">
+    <button class="btn" onclick="setTh()">Update Threshold</button>
+  </div>
+
+  <script>
+    async function update(){
+      try{
+        const r = await fetch('/data');
+        const d = await r.json();
+        document.getElementById('rgbTxt').textContent = d.r+','+d.g+','+d.b;
+        document.getElementById('colorBox').style.background = `rgb(${d.r},${d.g},${d.b})`;
+        document.getElementById('relayState').textContent = d.relay ? "ON":"OFF";
+        document.getElementById('modeState').textContent = d.mode;
+        document.getElementById('blackTh').textContent = d.black_th;
+      }catch(e){
+        console.log(e);
+      }
+    }
+    function setMode(m){ fetch('/mode?m='+m); }
+    function relay(state){ fetch('/relay?state='+state); }
+    function setTh(){
+      const v = document.getElementById('thInput').value;
+      if(v !== "") fetch('/set?black='+v);
+    }
+    setInterval(update, 200);
+    update();
+  </script>
+</body>
+</html>
